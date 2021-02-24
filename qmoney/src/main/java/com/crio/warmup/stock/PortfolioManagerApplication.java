@@ -1,6 +1,4 @@
-
 package com.crio.warmup.stock;
-
 
 import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.PortfolioTrade;
@@ -14,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +22,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.math3.geometry.Point;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,7 +42,14 @@ public class PortfolioManagerApplication {
 
   public static List<String> mainReadFile(String[] args) throws IOException, URISyntaxException {
 
-     return Collections.emptyList();
+    File jfile = resolveFileFromResources(args[0]);
+    ObjectMapper om = getObjectMapper();
+    PortfolioTrade[] pt = om.readValue(jfile, PortfolioTrade[].class);
+    List<String> symList = new ArrayList<String>();
+    for (PortfolioTrade p: pt) {
+      symList.add(p.getSymbol());
+    }
+    return symList;
   }
 
 
@@ -110,11 +118,11 @@ public class PortfolioManagerApplication {
 
   public static List<String> debugOutputs() {
 
-     String valueOfArgument0 = "trades.json";
-     String resultOfResolveFilePathArgs0 = "";
-     String toStringOfObjectMapper = "";
-     String functionNameFromTestFileInStackTrace = "";
-     String lineNumberFromTestFileInStackTrace = "";
+    String valueOfArgument0 = "trades.json";
+    String resultOfResolveFilePathArgs0 = "";
+    String toStringOfObjectMapper = "";
+    String functionNameFromTestFileInStackTrace = "";
+    String lineNumberFromTestFileInStackTrace = "";
 
 
     return Arrays.asList(new String[]{valueOfArgument0, resultOfResolveFilePathArgs0,
