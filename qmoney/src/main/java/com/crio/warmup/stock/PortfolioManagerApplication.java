@@ -2,6 +2,9 @@ package com.crio.warmup.stock;
 
 import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.PortfolioTrade;
+import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.dto.TotalReturnsDto;
+
 import com.crio.warmup.stock.log.UncaughtExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -22,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.apache.commons.math3.geometry.Point;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.web.client.RestTemplate;
@@ -60,6 +62,13 @@ public class PortfolioManagerApplication {
 
 
 
+
+
+
+
+  // TODO: CRIO_TASK_MODULE_REST_API
+  //  Find out the closing price of each stock on the end_date and return the list
+  //  of all symbols in ascending order by its close value on end date.
 
   // Note:
   // 1. You may have to register on Tiingo to get the api_token.
@@ -133,6 +142,44 @@ public class PortfolioManagerApplication {
 
   // Note:
   // Remember to confirm that you are getting same results for annualized returns as in Module 3.
+  public static List<String> mainReadQuotes(String[] args) throws IOException, URISyntaxException {
+    File jfile = resolveFileFromResources(args[0]);
+    ObjectMapper om = getObjectMapper();
+    PortfolioTrade[] pt = om.readValue(jfile, PortfolioTrade[].class);
+    RestTemplate restTemplate = new RestTemplate();
+    List<TotalReturnsDto> tdto = new ArrayList<TotalReturnsDto>();
+    for (PortfolioTrade p : pt) {
+      String uri = "https://api.tiingo.com/tiingo/daily/" + p.getSymbol() 
+          + "/prices?startDate=" + p.getPurchaseDate() + "&endDate=" + args[1] 
+          + "&token=8de63665046f5b927d4ff423068838a41bea4f25";
+      TiingoCandle[] result = restTemplate.getForObject(uri, TiingoCandle[].class);
+      TiingoCandle lastDay = result[result.length - 1];
+      tdto.add(new TotalReturnsDto(p.getSymbol(),lastDay.getClose()));
+    }
+
+    return sortStocks(tdto);
+  }
+
+  public static List<String> sortStocks(List<TotalReturnsDto> trdto) {
+    Collections.sort(trdto, new Comparator<TotalReturnsDto>() {
+      @Override
+      public int compare(TotalReturnsDto t1, TotalReturnsDto t2) {
+          return Double.compare(t1.getClosingPrice(), t2.getClosingPrice());
+      }
+    });
+    List<String> stocks = new ArrayList<String>();
+    for (TotalReturnsDto td : trdto) {
+      stocks.add(td.getSymbol());
+    }
+    return stocks;
+  }
+
+
+
+
+
+
+
 
 
 
@@ -141,7 +188,7 @@ public class PortfolioManagerApplication {
     ThreadContext.put("runId", UUID.randomUUID().toString());
 
     printJsonObject(mainReadFile(args));
-
+    printJsonObject(mainReadQuotes(args));
 
 
   }
