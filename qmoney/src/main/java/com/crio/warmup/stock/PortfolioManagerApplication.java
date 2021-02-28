@@ -128,9 +128,9 @@ public class PortfolioManagerApplication {
   public static List<String> debugOutputs() {
 
     String valueOfArgument0 = "trades.json";
-    String resultOfResolveFilePathArgs0 = "";
-    String toStringOfObjectMapper = "";
-    String functionNameFromTestFileInStackTrace = "";
+    String resultOfResolveFilePathArgs0 = "trades.json";
+    String toStringOfObjectMapper = "ObjectMapper";
+    String functionNameFromTestFileInStackTrace = "mainReadFile";
     String lineNumberFromTestFileInStackTrace = "";
 
 
@@ -175,18 +175,48 @@ public class PortfolioManagerApplication {
   }
 
 
+  public static List<AnnualizedReturn> mainCalculateSingleReturn(String[] args)
+    throws IOException, URISyntaxException {
+    List<AnnualizedReturn> result = new ArrayList<AnnualizedReturn>();
+    File jfile = resolveFileFromResources(args[0]);
+    ObjectMapper om = getObjectMapper();
+    PortfolioTrade[] pt = om.readValue(jfile, PortfolioTrade[].class);
+    RestTemplate restTemplate = new RestTemplate();
+    for (PortfolioTrade p : pt) { 
+      String uri = "https://api.tiingo.com/tiingo/daily/" + p.getSymbol() 
+      + "/prices?startDate=" + p.getPurchaseDate() + "&endDate=" + args[1] 
+      + "&token=8de63665046f5b927d4ff423068838a41bea4f25";
+      TiingoCandle[] tc = restTemplate.getForObject(uri, TiingoCandle[].class);
+      result.add(calculateAnnualizedReturns(tc[tc.length - 1].getDate(),p,tc[0].getOpen(),
+      tc[tc.length - 1].getClose()));
+    }
+    return result;
+  }
 
+// TODO: CRIO_TASK_MODULE_CALCULATIONS
+//  Return the populated list of AnnualizedReturn for all stocks.
+//  Annualized returns should be calculated in two steps:
+//   1. Calculate totalReturn = (sell_value - buy_value) / buy_value.
+//      1.1 Store the same as totalReturns
+//   2. Calculate extrapolated annualized returns by scaling the same in years span.
+//      The formula is:
+//      annualized_returns = (1 + total_returns) ^ (1 / total_num_years) - 1
+//      2.1 Store the same as annualized_returns
+//  Test the same using below specified command. The build should be successful.
+//     ./gradlew test --tests PortfolioManagerApplicationTest.testCalculateAnnualizedReturn
 
-
-
-
-
-
-
+  public static AnnualizedReturn calculateAnnualizedReturns(LocalDate endDate,
+    PortfolioTrade trade, Double buyPrice, Double sellPrice) {
+    double totalReturn = (double)((sellPrice - buyPrice) / buyPrice);
+    long days = ChronoUnit.DAYS.between(trade.getPurchaseDate(),endDate);
+    double years = (double)(days) / 365;
+    double annualized_returns = Math.pow((1 + totalReturn), (double)(1 / years)) - 1; 
+    return new AnnualizedReturn(trade.getSymbol(), annualized_returns, totalReturn);
+  } 
   public static void main(String[] args) throws Exception {
-    Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
-    ThreadContext.put("runId", UUID.randomUUID().toString());
-
+      Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+      ThreadContext.put("runId", UUID.randomUUID().toString());
+    
     printJsonObject(mainReadFile(args));
     printJsonObject(mainReadQuotes(args));
 
