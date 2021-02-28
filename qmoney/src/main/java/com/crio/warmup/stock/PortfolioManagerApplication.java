@@ -189,9 +189,20 @@ public class PortfolioManagerApplication {
       TiingoCandle[] tc = restTemplate.getForObject(uri, TiingoCandle[].class);
       result.add(calculateAnnualizedReturns(tc[tc.length - 1].getDate(),p,tc[0].getOpen(),
           tc[tc.length - 1].getClose()));
+    } 
+    return sortReturn(result);
     }
-    return result;
-  }
+
+    public static List<AnnualizedReturn> sortReturn(List<AnnualizedReturn> ar) {
+       Collections.sort(ar, new Comparator<AnnualizedReturn>() {
+        @Override
+        public int compare(AnnualizedReturn t1, AnnualizedReturn t2) {
+            return Double.compare(t1.getAnnualizedReturn(), t2.getAnnualizedReturn());
+        }
+      });
+      return ar;
+    }
+
 
   // TODO: CRIO_TASK_MODULE_CALCULATIONS
   //  Return the populated list of AnnualizedReturn for all stocks.
@@ -217,9 +228,9 @@ public class PortfolioManagerApplication {
   public static void main(String[] args) throws Exception {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
     ThreadContext.put("runId", UUID.randomUUID().toString());
-    
-    printJsonObject(mainReadFile(args));
-    printJsonObject(mainReadQuotes(args));
+    String[] arg = new String[]{"trades_old.json", "2019-12-12"};
+    printJsonObject(mainCalculateSingleReturn(arg));
+    //printJsonObject(mainReadQuotes(args));
 
 
   }
