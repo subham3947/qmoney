@@ -191,10 +191,10 @@ public class PortfolioManagerApplication {
           tc[tc.length - 1].getClose()));
     } 
     return sortReturn(result);
-    }
+  }
 
-    public static List<AnnualizedReturn> sortReturn(List<AnnualizedReturn> ar) {
-       Collections.sort(ar, new Comparator<AnnualizedReturn>() {
+  public static List<AnnualizedReturn> sortReturn(List<AnnualizedReturn> ar) {
+    Collections.sort(ar, new Comparator<AnnualizedReturn>() {
         @Override
         public int compare(AnnualizedReturn t1, AnnualizedReturn t2) {
             return Double.compare(t2.getAnnualizedReturn(), t1.getAnnualizedReturn());
