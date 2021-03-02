@@ -3,6 +3,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Launch PortfolioManagerImpl",
+      "request": "launch",
+      "mainClass": "com.crio.warmup.stock.portfolio.PortfolioManagerImpl",
+      "projectName": "qmoney"
+    },
+    {
+      "type": "java",
       "name": "Launch PortfolioManagerApplication",
       "request": "launch",
       "mainClass": "com.crio.warmup.stock.PortfolioManagerApplication",
