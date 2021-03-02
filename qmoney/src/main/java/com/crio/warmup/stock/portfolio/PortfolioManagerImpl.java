@@ -24,6 +24,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class PortfolioManagerImpl implements PortfolioManager {
@@ -57,32 +58,38 @@ public class PortfolioManagerImpl implements PortfolioManager {
   @Override
   public List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> 
       portfolioTrades, LocalDate endDate) {
-    double annualizedReturns = 0.0;
-    double totalReturn = 0.0;
     List<AnnualizedReturn> result = new ArrayList<AnnualizedReturn>();
-    for (PortfolioTrade pt : portfolioTrades) {
-      try {
-        Candle cd = getStockQuote(pt.getSymbol(), pt.getPurchaseDate(), endDate);
-        totalReturn = (double) ((cd.getClose() - cd.getOpen()) / cd.getOpen());
-        long days = ChronoUnit.DAYS.between(pt.getPurchaseDate(), endDate);
-        double years = (double) (days) / 365;
-        annualizedReturns = Math.pow((1 + totalReturn), (double) (1 / years)) - 1;
-        
-      } catch (JsonProcessingException e) {
-        e.printStackTrace();
-      }      
-      
-      
-
-
-      
-
-      result.add(new AnnualizedReturn(pt.getSymbol(), annualizedReturns, totalReturn));
-
+    for(PortfolioTrade pt : portfolioTrades) {
+      AnnualizedReturn annualReturn = getReturn(pt , endDate);
+      result.add(annualReturn);
+    
     }
     result.sort(Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed());
     return result;
 
+  }
+
+  public AnnualizedReturn getReturn(PortfolioTrade portfolioTrade, LocalDate endDate) {
+    String symbol = portfolioTrade.getSymbol();
+    AnnualizedReturn annualizedReturn;
+    LocalDate startDate = portfolioTrade.getPurchaseDate();
+    try {
+      List<Candle> candle = getStockQuote(symbol, startDate, endDate);
+      Candle firstDay = candle.get(0);
+      Candle lastDay = candle.get(candle.size()-1);
+      Double buyPrice = firstDay.getOpen();
+      Double sellPrice = lastDay.getClose();
+      Double totalReturn = (double)((sellPrice - buyPrice) / buyPrice);
+      long days = ChronoUnit.DAYS.between(startDate,endDate);
+      double years = (double)(days) / 365;
+      double annualizedReturns = Math.pow((1 + totalReturn), (double)(1 / years)) - 1;
+      annualizedReturn = new AnnualizedReturn(symbol, annualizedReturns, totalReturn); 
+    } catch (Exception e) {
+      //TODO: handle exception
+      annualizedReturn = new AnnualizedReturn(symbol, 0.0, 0.0);
+    }
+     
+    return annualizedReturn;
   }
 
   private Comparator<AnnualizedReturn> getComparator() {
@@ -95,15 +102,21 @@ public class PortfolioManagerImpl implements PortfolioManager {
   // Extract the logic to call Tiingo third-party APIs to a separate function.
   // Remember to fill out the buildUri function and use that.
 
-  public static Candle getStockQuote(String symbol, LocalDate from, LocalDate to) 
+  public List<Candle>  getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException {
-    String uri = buildUri(symbol, from, to);
-    RestTemplate restTemplate = new RestTemplate();
-    TiingoCandle[] tc = restTemplate.getForObject(uri, TiingoCandle[].class);
-    TiingoCandle candle = new TiingoCandle();
-    candle.setClose(tc[tc.length - 1].getClose());
-    candle.setOpen(tc[0].getOpen());
-    return candle;
+    TiingoCandle[] tc;
+    if( from == null || to == null) {
+      System.out.println("Both Null");
+      return new ArrayList<Candle>();
+    }
+    else {
+      String uri = buildUri(symbol, from, to);
+      RestTemplate restTemplate = new RestTemplate();
+      tc = restTemplate.getForObject(uri, TiingoCandle[].class);
+      System.out.println("test"+Arrays.asList(tc));
+    }
+    return Arrays.asList(tc);
+        
     
   }
 
@@ -111,7 +124,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
     return "https://api.tiingo.com/tiingo/daily/" + symbol 
       + "/prices?startDate=" + startDate + "&endDate=" + endDate 
       + "&token=8de63665046f5b927d4ff423068838a41bea4f25";
-    //return uriTemplate;
+
   }
 
   
