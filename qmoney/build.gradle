@@ -1,4 +1,4 @@
-    plugins {
+plugins {
     id 'io.spring.dependency-management'
     id 'java'
 }
@@ -57,4 +57,17 @@ test {
 }
 
 
+publishing {
+    publications {
 
+        maven(MavenPublication) {
+                groupId 'com.crio.warmup'
+                artifactId 'annual-return'
+                version '1.0.0'
+                from components.java
+        }
+
+
+
+    }
+}
