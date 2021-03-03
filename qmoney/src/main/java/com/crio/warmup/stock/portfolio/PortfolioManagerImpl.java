@@ -59,8 +59,8 @@ public class PortfolioManagerImpl implements PortfolioManager {
   public List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> 
       portfolioTrades, LocalDate endDate) {
     List<AnnualizedReturn> result = new ArrayList<AnnualizedReturn>();
-    for(PortfolioTrade pt : portfolioTrades) {
-      AnnualizedReturn annualReturn = getReturn(pt , endDate);
+    for (PortfolioTrade pt : portfolioTrades) {
+      AnnualizedReturn annualReturn = getReturn(pt, endDate);
       result.add(annualReturn);
     
     }
@@ -76,7 +76,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
     try {
       List<Candle> candle = getStockQuote(symbol, startDate, endDate);
       Candle firstDay = candle.get(0);
-      Candle lastDay = candle.get(candle.size()-1);
+      Candle lastDay = candle.get(candle.size() - 1);
       Double buyPrice = firstDay.getOpen();
       Double sellPrice = lastDay.getClose();
       Double totalReturn = (double)((sellPrice - buyPrice) / buyPrice);
@@ -105,15 +105,14 @@ public class PortfolioManagerImpl implements PortfolioManager {
   public List<Candle>  getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException {
     TiingoCandle[] tc;
-    if( from == null || to == null) {
-      System.out.println("Both Null");
+    if (from == null || to == null) {
+      //System.out.println("Both Null");
       return new ArrayList<Candle>();
-    }
-    else {
+    } else {
       String uri = buildUri(symbol, from, to);
       RestTemplate restTemplate = new RestTemplate();
       tc = restTemplate.getForObject(uri, TiingoCandle[].class);
-      System.out.println("test"+Arrays.asList(tc));
+      System.out.println("test" + Arrays.asList(tc));
     }
     return Arrays.asList(tc);
         
