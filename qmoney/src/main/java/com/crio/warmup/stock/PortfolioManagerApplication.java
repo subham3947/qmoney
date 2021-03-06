@@ -248,7 +248,7 @@ public class PortfolioManagerApplication {
     String contents = readFileAsString(file);
     ObjectMapper objectMapper = getObjectMapper();
     PortfolioTrade portfolioTrades = objectMapper.readValue(contents, PortfolioTrade.class);
-    PortfolioManager portfolioManager = PortfolioManagerFactory.getPortfolioManager(
+    PortfolioManager portfolioManager = PortfolioManagerFactory.getPortfolioManager("tiingo",
         new RestTemplate());
     return portfolioManager.calculateAnnualizedReturn(Arrays.asList(portfolioTrades), endDate);
   }
@@ -267,6 +267,16 @@ public class PortfolioManagerApplication {
     reader.close();
     return fileData.toString();
   }
+
+
+
+
+
+
+
+
+
+
 
   public static void main(String[] args) throws Exception {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());

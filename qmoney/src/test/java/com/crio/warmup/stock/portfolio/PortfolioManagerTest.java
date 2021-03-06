@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.quotes.StockQuotesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -22,6 +23,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -31,6 +34,8 @@ This class is supposed to be used by assessments only.
 @ExtendWith(MockitoExtension.class)
 class PortfolioManagerTest {
 
+  @Mock
+  private StockQuotesService stockQuotesService;
 
   @Mock
   private RestTemplate restTemplate;
@@ -78,24 +83,34 @@ class PortfolioManagerTest {
 
   @Test
   public void calculateExtrapolatedAnnualizedReturn()
-      throws Exception {
+          throws Exception {
     //given
-    String moduleToRun = "REFACTOR";
-
-
+    String moduleToRun = "ADDITIONAL_REFACTOR";
+    
+    
     if (moduleToRun.equals("REFACTOR")) {
       Mockito.doReturn(getCandles(aaplQuotes))
-      .when(portfolioManager).getStockQuote(eq("AAPL"), any(), any());
+          .when(portfolioManager).getStockQuote(eq("AAPL"), any(), any());
       Mockito.doReturn(getCandles(msftQuotes))
           .when(portfolioManager).getStockQuote(eq("MSFT"), any(), any());
       Mockito.doReturn(getCandles(googlQuotes))
           .when(portfolioManager).getStockQuote(eq("GOOGL"), any(), any());
-    }       
+    }
     PortfolioTrade trade1 = new PortfolioTrade("AAPL", 50, LocalDate.parse("2019-01-02"));
     PortfolioTrade trade2 = new PortfolioTrade("GOOGL", 100, LocalDate.parse("2019-01-02"));
     PortfolioTrade trade3 = new PortfolioTrade("MSFT", 20, LocalDate.parse("2019-01-02"));
     List<PortfolioTrade> portfolioTrades = Arrays
         .asList(new PortfolioTrade[]{trade1, trade2, trade3});
+
+    if (moduleToRun.equals("ADDITIONAL_REFACTOR")) {
+      portfolioManager = new PortfolioManagerImpl(stockQuotesService);
+      Mockito.doReturn(getCandles(aaplQuotes))
+          .when(stockQuotesService).getStockQuote(eq("AAPL"), any(), any());
+      Mockito.doReturn(getCandles(msftQuotes))
+          .when(stockQuotesService).getStockQuote(eq("MSFT"), any(), any());
+      Mockito.doReturn(getCandles(googlQuotes))
+          .when(stockQuotesService).getStockQuote(eq("GOOGL"), any(), any());
+    }
 
     //when
     List<AnnualizedReturn> annualizedReturns = portfolioManager
@@ -108,9 +123,9 @@ class PortfolioManagerTest {
     Assertions.assertEquals(0.584, annualizedReturns.get(1).getAnnualizedReturn(), 0.01);
     Assertions.assertEquals(0.33, annualizedReturns.get(2).getAnnualizedReturn(),0.01);
     Assertions.assertEquals(Arrays.asList(new String[]{"AAPL", "MSFT", "GOOGL"}), symbols);
-
+    
   }
-
+    
 
   private List<TiingoCandle> getCandles(String responseText) throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();

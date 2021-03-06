@@ -1,6 +1,9 @@
 
 package com.crio.warmup.stock.portfolio;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.SECONDS;
+
 import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.PortfolioTrade;
@@ -11,6 +14,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.crio.warmup.stock.quotes.StockQuotesService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -29,13 +36,23 @@ import org.springframework.web.client.RestTemplate;
 
 public class PortfolioManagerImpl implements PortfolioManager {
 
-  static RestTemplate restTemplate;
+  RestTemplate restTemplate;
+  StockQuotesService stockQuotesService;
 
   // Caution: Do not delete or modify the constructor, or else your build will
   // break!
+
+
+
+  // Caution: Do not delete or modify the constructor, or else your build will break!
   // This is absolutely necessary for backward compatibility
   protected PortfolioManagerImpl(RestTemplate restTemplate) {
     this.restTemplate = restTemplate;
+  }
+
+  protected PortfolioManagerImpl(StockQuotesService stockQuotesService) {
+    //this.restTemplate = restTemplate;
+    this.stockQuotesService = stockQuotesService;
   }
 
   // TODO: CRIO_TASK_MODULE_REFACTOR
@@ -92,6 +109,12 @@ public class PortfolioManagerImpl implements PortfolioManager {
     return annualizedReturn;
   }
 
+
+
+
+
+
+
   private Comparator<AnnualizedReturn> getComparator() {
     return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
   }
@@ -112,7 +135,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
       String uri = buildUri(symbol, from, to);
       RestTemplate restTemplate = new RestTemplate();
       tc = restTemplate.getForObject(uri, TiingoCandle[].class);
-      System.out.println("test" + Arrays.asList(tc));
+      //System.out.println("test" + Arrays.asList(tc));
     }
     return Arrays.asList(tc);
         
@@ -128,4 +151,12 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   
   
+
+
+  // ¶TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
+  //  Modify the function #getStockQuote and start delegating to calls to
+  //  stockQuoteService provided via newly added constructor of the class.
+  //  You also have a liberty to completely get rid of that function itself, however, make sure
+  //  that you do not delete the #getStockQuote function.
+
 }

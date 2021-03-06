@@ -1,4 +1,3 @@
-
 package com.crio.warmup.stock.portfolio;
 
 import org.junit.jupiter.api.Assertions;
@@ -20,5 +19,10 @@ class PortfolioManagerFactoryTest {
         instanceof PortfolioManagerImpl);
   }
 
+  @Test
+  void getPortfolioManagerWithStockQuoteService() {
+    Assertions.assertTrue(PortfolioManagerFactory.getPortfolioManager("tiingo", restTemplate)
+        instanceof PortfolioManagerImpl);
+  }
 
 }
