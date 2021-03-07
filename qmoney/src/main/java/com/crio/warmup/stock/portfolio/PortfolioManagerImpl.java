@@ -125,14 +125,17 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   public List<Candle>  getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException {
+    if (from.compareTo(to) >= 0) { 
+      throw new RuntimeException(); 
+    }
     TiingoCandle[] tc;
     String uri = buildUri(symbol, from, to);
     RestTemplate restTemplate = new RestTemplate();
     tc = restTemplate.getForObject(uri, TiingoCandle[].class);
-    if (tc != null){
+    if (tc != null) {
       return Arrays.asList(tc);
-      } else {
-        return Collections.emptyList();
+    } else {
+      return Collections.emptyList();
       }
   }
           

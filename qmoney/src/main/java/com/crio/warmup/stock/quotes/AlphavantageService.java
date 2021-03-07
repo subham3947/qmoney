@@ -63,7 +63,9 @@ public class AlphavantageService implements StockQuotesService {
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException {
     // TODO Auto-generated method stub
-
+    if (from.compareTo(to) >= 0) { 
+      throw new RuntimeException(); 
+    }    
     String response = restTemplate.getForObject(buildUri(symbol, from, to), 
         String.class);
     ObjectMapper om = new ObjectMapper();
