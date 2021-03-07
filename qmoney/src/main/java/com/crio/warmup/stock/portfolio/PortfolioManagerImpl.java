@@ -73,11 +73,13 @@ public class PortfolioManagerImpl implements PortfolioManager {
   @Override
   public List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> 
       portfolioTrades, LocalDate endDate) {
+    if (endDate == null) {
+      Collections.emptyList();
+    }
     List<AnnualizedReturn> result = new ArrayList<AnnualizedReturn>();
     for (PortfolioTrade pt : portfolioTrades) {
       AnnualizedReturn annualReturn = getReturn(pt, endDate);
       result.add(annualReturn);
-    
     }
     result.sort(Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed());
     return result;
