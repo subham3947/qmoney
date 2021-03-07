@@ -134,11 +134,9 @@ public class PortfolioManagerImpl implements PortfolioManager {
       } else {
         return Collections.emptyList();
       }
-    }
-    
-        
-    
   }
+          
+    
 
   protected static String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
     return "https://api.tiingo.com/tiingo/daily/" + symbol 
