@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -125,15 +126,16 @@ public class PortfolioManagerImpl implements PortfolioManager {
   public List<Candle>  getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException {
     TiingoCandle[] tc;
-    if (from == null || to == null) {
-      //System.out.println("Both Null");
-      return new ArrayList<Candle>();
-    } else {
-      String uri = buildUri(symbol, from, to);
-      RestTemplate restTemplate = new RestTemplate();
-      tc = restTemplate.getForObject(uri, TiingoCandle[].class);
+    String uri = buildUri(symbol, from, to);
+    RestTemplate restTemplate = new RestTemplate();
+    tc = restTemplate.getForObject(uri, TiingoCandle[].class);
+    if (tc != null){
+      return Arrays.asList(tc);
+      } else {
+        return Collections.emptyList();
+      }
     }
-    return Arrays.asList(tc);
+    
         
     
   }
