@@ -126,7 +126,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
   public List<Candle>  getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException {
     if (from.compareTo(to) >= 0) { 
-      throw new RuntimeException(); 
+      return Collections.emptyList(); 
     }
     TiingoCandle[] tc;
     String uri = buildUri(symbol, from, to);
