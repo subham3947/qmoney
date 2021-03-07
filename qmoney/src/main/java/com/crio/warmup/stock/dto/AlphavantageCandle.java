@@ -1,17 +1,17 @@
 package com.crio.warmup.stock.dto;
 
-//import java.sql.Date;
-import java.time.LocalDate;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.LocalDate;
 
 
 // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
 //  Implement the Candle interface in such a way that it matches the parameters returned
 //  inside Json response from Alphavantage service.
 
-  //Reference - https:www.baeldung.com/jackson-ignore-properties-on-serialization
-  //Reference - https:www.baeldung.com/jackson-name-of-property
+//Reference - https:www.baeldung.com/jackson-ignore-properties-on-serialization
+//Reference - https:www.baeldung.com/jackson-name-of-property
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AlphavantageCandle implements Candle {

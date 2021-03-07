@@ -25,16 +25,11 @@ public class TiingoService implements StockQuotesService {
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException {
-    // TODO Auto-generated method stub
-    
-    String uri = buildUri(symbol, from, to);
-    RestTemplate restTemplate = new RestTemplate();
-    TiingoCandle[] tc = restTemplate.getForObject(uri, TiingoCandle[].class);
-    if(tc.length == 0){
-      return Collections.EMPTY_LIST;
-    }
-    
-    return Arrays.asList(tc);
+    String response = restTemplate.getForObject(buildUri(symbol, from, to), String.class);
+    ObjectMapper om = new ObjectMapper();
+    om.registerModule(new JavaTimeModule());
+    Candle[] result = om.readValue(response, TiingoCandle[].class);
+    return Arrays.asList(result);
   }
 
   protected static String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {

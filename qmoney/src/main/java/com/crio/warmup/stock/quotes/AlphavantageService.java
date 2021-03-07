@@ -1,4 +1,3 @@
-
 package com.crio.warmup.stock.quotes;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -10,17 +9,25 @@ import com.crio.warmup.stock.dto.Candle;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.springframework.web.client.RestTemplate;
 
 public class AlphavantageService implements StockQuotesService {
 
+  private RestTemplate restTemplate;
+
+  protected AlphavantageService(RestTemplate restTemplate) {
+    this.restTemplate = restTemplate;
+  }
+
+  
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  Implement the StockQuoteService interface as per the contracts. Call Alphavantage service
   //  to fetch daily adjusted data for last 20 years.
@@ -40,42 +47,43 @@ public class AlphavantageService implements StockQuotesService {
   // 2. Run the tests using command below and make sure it passes:
   //    ./gradlew test --tests AlphavantageServiceTest
   //CHECKSTYLE:OFF
-    //CHECKSTYLE:ON
+  //CHECKSTYLE:ON
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  1. Write a method to create appropriate url to call Alphavantage service. The method should
   //     be using configurations provided in the {@link @application.properties}.
   //  2. Use this method in #getStockQuote.
-
-
+  
   public static String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
-    return "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + 
-      symbol +"&outputsize=full&apikey=OMFBWTOW9XUNZ0XX";
+    return "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" 
+      + symbol + "&outputsize=full&apikey=OMFBWTOW9XUNZ0XX";
 
   }
 
   @Override
-  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws JsonProcessingException {
+  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
+      throws JsonProcessingException {
     // TODO Auto-generated method stub
-    
-    String uri = buildUri(symbol, from, to);
-    RestTemplate restTemplate = new RestTemplate();
-    String response = restTemplate.getForObject(uri, String.class);
-    ObjectMapper om =new ObjectMapper();
+
+    String response = restTemplate.getForObject(buildUri(symbol, from, to), 
+        String.class);
+    ObjectMapper om = new ObjectMapper();
     om.registerModule(new JavaTimeModule());
-    Map<LocalDate , AlphavantageCandle> jsonResponse = om.readValue(response, AlphavantageDailyResponse.class).getCandles();
-    LocalDate start = from;
+    Map<LocalDate, AlphavantageCandle> jsonResponse = om.readValue(response, 
+        AlphavantageDailyResponse.class).getCandles();
+    LocalDate start = from; 
     List<Candle> stockList = new ArrayList<>();
-    while(start.isBefore(to.plusDays(1))){
+    while (start.isBefore(to.plusDays(1))) {
       AlphavantageCandle candle = jsonResponse.get(start);
-      if(candle != null){
+      if (candle != null) {
         candle.setDate(start);
         stockList.add(candle);
       }
-      start=start.plusDays(1);
+      start = start.plusDays(1);
     
     }
     return stockList;
   }
+
 
 }
 

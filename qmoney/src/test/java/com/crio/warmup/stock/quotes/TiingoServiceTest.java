@@ -68,11 +68,11 @@ class TiingoServiceTest {
     assertEquals(candles.get(0).getOpen(), 1027.2, 0.3);
 
     ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
-    Mockito.verify(restTemplate, atLeast(0)).getForObject(urlCaptor.capture(), any());
+    Mockito.verify(restTemplate, atLeast(0))
+        .getForObject(urlCaptor.capture(), any());
     ArgumentCaptor<String> urlCaptorWithMap = ArgumentCaptor.forClass(String.class);
     Mockito.verify(restTemplate, atLeast(0))
         .getForObject(urlCaptorWithMap.capture(), any(), anyMap());
-
     ArgumentCaptor<URI> urlCaptorAsUri = ArgumentCaptor.forClass(URI.class);
     Mockito.verify(restTemplate, atLeast(0))
         .getForObject(urlCaptorAsUri.capture(), any(Class.class));
@@ -80,9 +80,10 @@ class TiingoServiceTest {
     List<String> propertyKeyValues = urlCaptor.getAllValues();
     List<String> propertyKeyValues2 = urlCaptorWithMap.getAllValues();
     List<URI> propertyKeyValues3 = urlCaptorAsUri.getAllValues();
+    
 
-    assertTrue(!propertyKeyValues.isEmpty() || !propertyKeyValues2.isEmpty() || !propertyKeyValues3
-        .isEmpty());
+    assertTrue(!propertyKeyValues.isEmpty() || !propertyKeyValues2.isEmpty() 
+        || !propertyKeyValues3.isEmpty());
 
   }
 }

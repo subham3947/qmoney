@@ -2,7 +2,7 @@
 package com.crio.warmup.stock.quotes;
 
 import org.springframework.web.client.RestTemplate;
-import com.crio.warmup.stock.quotes.TiingoService;
+
 public enum StockQuoteServiceFactory {
 
   // Note: (Recommended reading)
@@ -28,10 +28,8 @@ public enum StockQuoteServiceFactory {
       return new TiingoService(restTemplate);
       
     } else {
-      return new AlphavantageService();
+      return new AlphavantageService(restTemplate);
       
     }
-
-     //return null;
   }
 }

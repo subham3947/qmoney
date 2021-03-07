@@ -26,10 +26,11 @@ public class PortfolioManagerFactory {
   //       ./gradlew test --tests PortfolioManagerFactory
 
 
-   public static PortfolioManager getPortfolioManager(String provider,
-     RestTemplate restTemplate) {
-     StockQuotesService stockQuotesService = StockQuoteServiceFactory.INSTANCE.getService(provider, restTemplate);
-     return new PortfolioManagerImpl(stockQuotesService);
-   }
+  public static PortfolioManager getPortfolioManager(String provider,
+      RestTemplate restTemplate) {
+    StockQuotesService stockQuotesService = StockQuoteServiceFactory.INSTANCE.getService(provider, 
+        restTemplate);
+    return new PortfolioManagerImpl(stockQuotesService);
+  }
 
 }
