@@ -132,7 +132,6 @@ public class PortfolioManagerImpl implements PortfolioManager {
       String uri = buildUri(symbol, from, to);
       RestTemplate restTemplate = new RestTemplate();
       tc = restTemplate.getForObject(uri, TiingoCandle[].class);
-      //System.out.println("test" + Arrays.asList(tc));
     }
     return Arrays.asList(tc);
         

@@ -29,7 +29,11 @@ public class TiingoService implements StockQuotesService {
     ObjectMapper om = new ObjectMapper();
     om.registerModule(new JavaTimeModule());
     Candle[] result = om.readValue(response, TiingoCandle[].class);
-    return Arrays.asList(result);
+    if( result != null ){
+      return Arrays.asList(result);
+    } else{
+      return Arrays.asList(new TiingoCandle[0]);
+    }
   }
 
   protected static String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
