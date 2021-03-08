@@ -25,6 +25,7 @@ public class TiingoService implements StockQuotesService {
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException {
+    System.out.println("Calling");
     if (from.compareTo(to) >= 0) { 
           throw new RuntimeException(); 
     }

@@ -44,11 +44,11 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   // Caution: Do not delete or modify the constructor, or else your build will break!
   // This is absolutely necessary for backward compatibility
-  protected PortfolioManagerImpl(RestTemplate restTemplate) {
+  PortfolioManagerImpl(RestTemplate restTemplate) {
     this.restTemplate = restTemplate;
   }
 
-  protected PortfolioManagerImpl(StockQuotesService stockQuotesService) {
+  PortfolioManagerImpl(StockQuotesService stockQuotesService) {
     //this.restTemplate = restTemplate;
     this.stockQuotesService = stockQuotesService;
   }
@@ -110,11 +110,6 @@ public class PortfolioManagerImpl implements PortfolioManager {
   }
 
 
-
-
-
-
-
   private Comparator<AnnualizedReturn> getComparator() {
     return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
   }
@@ -127,21 +122,9 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   public List<Candle>  getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException {
-    if (from.compareTo(to) >= 0) { 
-      return Collections.emptyList(); 
-    }
-    TiingoCandle[] tc;
-    String uri = buildUri(symbol, from, to);
-    RestTemplate restTemplate = new RestTemplate();
-    tc = restTemplate.getForObject(uri, TiingoCandle[].class);
-    if (tc != null) {
-      return Arrays.asList(tc);
-    } else {
-      return Collections.emptyList();
-      }
+    return stockQuotesService.getStockQuote(symbol, from, to);
   }
           
-    
 
   protected static String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
     return "https://api.tiingo.com/tiingo/daily/" + symbol 

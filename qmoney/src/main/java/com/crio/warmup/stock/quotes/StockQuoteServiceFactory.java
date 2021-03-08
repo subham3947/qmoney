@@ -1,6 +1,15 @@
 
 package com.crio.warmup.stock.quotes;
 
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import com.crio.warmup.stock.dto.Candle;
+import com.crio.warmup.stock.dto.TiingoCandle;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import org.springframework.web.client.RestTemplate;
 
 public enum StockQuoteServiceFactory {
@@ -32,4 +41,6 @@ public enum StockQuoteServiceFactory {
       
     }
   }
+
+
 }
