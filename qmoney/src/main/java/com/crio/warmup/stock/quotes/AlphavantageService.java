@@ -67,11 +67,13 @@ public class AlphavantageService implements StockQuotesService {
     }    
     String response = restTemplate.getForObject(buildUri(symbol, from, to), 
         String.class);
-    System.out.println(response);
     ObjectMapper om = new ObjectMapper();
     om.registerModule(new JavaTimeModule());
     Map<LocalDate, AlphavantageCandle> jsonResponse = om.readValue(response, 
         AlphavantageDailyResponse.class).getCandles();
+    if (jsonResponse == null) {
+      throw new StockQuoteServiceException("Response is null.");
+    }
     LocalDate start = from; 
     List<Candle> stockList = new ArrayList<>();
     while (start.isBefore(to.plusDays(1))) {

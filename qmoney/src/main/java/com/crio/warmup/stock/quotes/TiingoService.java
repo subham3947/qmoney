@@ -28,7 +28,7 @@ public class TiingoService implements StockQuotesService {
       throws JsonProcessingException, StockQuoteServiceException {
     //System.out.println("Calling");
     if (from.compareTo(to) >= 0) { 
-          throw new RuntimeException(); 
+      throw new RuntimeException();
     }
     String response = restTemplate.getForObject(buildUri(symbol, from, to), String.class);
     ObjectMapper om = new ObjectMapper();
