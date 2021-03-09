@@ -15,6 +15,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
+import com.crio.warmup.stock.quotes.StockQuotesService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -37,13 +42,10 @@ public class PortfolioManagerImpl implements PortfolioManager {
   RestTemplate restTemplate;
   StockQuotesService stockQuotesService;
 
-  // Caution: Do not delete or modify the constructor, or else your build will
-  // break!
-
-
 
   // Caution: Do not delete or modify the constructor, or else your build will break!
   // This is absolutely necessary for backward compatibility
+  
   PortfolioManagerImpl(RestTemplate restTemplate) {
     this.restTemplate = restTemplate;
   }
@@ -110,9 +112,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
   }
 
 
-  private Comparator<AnnualizedReturn> getComparator() {
-    return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
-  }
+
 
   // CHECKSTYLE:OFF
 
@@ -127,7 +127,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
   //  that you do not delete the #getStockQuote function.
 
   public List<Candle>  getStockQuote(String symbol, LocalDate from, LocalDate to) 
-      throws JsonProcessingException {
+      throws JsonProcessingException, StockQuoteServiceException {
     return stockQuotesService.getStockQuote(symbol, from, to);
   }
           
@@ -144,4 +144,19 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
 
   
+  
+
+
+
+
+
+
+
+  private Comparator<AnnualizedReturn> getComparator() {
+    return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
+  }
+
+
+
+
 }

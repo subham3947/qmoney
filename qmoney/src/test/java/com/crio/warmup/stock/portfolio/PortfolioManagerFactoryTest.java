@@ -25,4 +25,5 @@ class PortfolioManagerFactoryTest {
         instanceof PortfolioManagerImpl);
   }
 
+
 }

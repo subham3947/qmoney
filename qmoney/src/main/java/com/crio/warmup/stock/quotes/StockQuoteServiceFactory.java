@@ -33,13 +33,20 @@ public enum StockQuoteServiceFactory {
 
   public StockQuotesService getService(String provider,  RestTemplate restTemplate) {
 
-    if (provider.equalsIgnoreCase("tiingo")) {
-      return new TiingoService(restTemplate);
-      
-    } else {
+    try {
+      if (provider.equalsIgnoreCase("tiingo")) {
+        return new TiingoService(restTemplate);
+        
+      } else {
+        System.out.println("Sending Alpha");
+        return new AlphavantageService(restTemplate);
+        
+      }
+    } catch (Exception e) {
+      //TODO: handle exception
       return new AlphavantageService(restTemplate);
-      
     }
+    
   }
 
 

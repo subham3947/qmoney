@@ -83,3 +83,7 @@ public class AlphavantageCandle implements Candle {
   }
 }
 
+
+
+
+

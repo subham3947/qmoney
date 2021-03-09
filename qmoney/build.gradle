@@ -2,7 +2,6 @@ plugins {
     id 'io.spring.dependency-management'
     id 'java'
 }
-
 group = 'com.crio.warmup'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'

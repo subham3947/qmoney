@@ -1,4 +1,3 @@
-
 package com.crio.warmup.stock;
 
 import com.crio.warmup.stock.dto.AnnualizedReturn;
@@ -248,8 +247,9 @@ public class PortfolioManagerApplication {
     String contents = readFileAsString(file);
     ObjectMapper objectMapper = getObjectMapper();
     PortfolioTrade portfolioTrades = objectMapper.readValue(contents, PortfolioTrade.class);
-    PortfolioManager portfolioManager = PortfolioManagerFactory.getPortfolioManager("tiingo",
-        new RestTemplate());
+    // PortfolioManager portfolioManager = PortfolioManagerFactory.getPortfolioManager("tiingo",
+    //     new RestTemplate());
+    PortfolioManager portfolioManager = PortfolioManagerFactory.getPortfolioManager(new RestTemplate());
     return portfolioManager.calculateAnnualizedReturn(Arrays.asList(portfolioTrades), endDate);
   }
 
@@ -267,6 +267,10 @@ public class PortfolioManagerApplication {
     reader.close();
     return fileData.toString();
   }
+
+
+
+
 
 
 
