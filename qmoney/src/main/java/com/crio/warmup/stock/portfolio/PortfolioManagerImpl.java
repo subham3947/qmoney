@@ -88,6 +88,9 @@ public class PortfolioManagerImpl implements PortfolioManager {
     AnnualizedReturn annualizedReturn;
     LocalDate startDate = portfolioTrade.getPurchaseDate();
     try {
+      if(startDate.compareTo(endDate) >= 0) { 
+        throw new RuntimeException("Failed to get data from service provider");
+      }
       List<Candle> candle = getStockQuote(symbol, startDate, endDate);
       Candle firstDay = candle.get(0);
       Candle lastDay = candle.get(candle.size() - 1);

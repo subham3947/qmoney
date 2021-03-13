@@ -120,15 +120,7 @@ class PortfolioManagerPerformanceTest {
     Assertions.assertEquals(0.58, annualizedReturns.get(1).getAnnualizedReturn(), 0.01);
     Assertions.assertEquals(0.33, annualizedReturns.get(2).getAnnualizedReturn(), 0.01);
     Assertions.assertEquals(Arrays.asList(new String[]{"AAPL", "MSFT", "GOOGL"}), symbols);
-    try {
-      System.out.println(System.currentTimeMillis() - startTime);
-      Assertions.assertTrue(System.currentTimeMillis() - startTime < 6000,
-          "The task did not finish in time");
-      
-    } catch (Exception e) {
-      e.printStackTrace();
-      //TODO: handle exception
-    }
+    
     Assertions.assertTrue(System.currentTimeMillis() - startTime < 6000,
         "The task did not finish in time");
   }

@@ -63,7 +63,7 @@ public class AlphavantageService implements StockQuotesService {
       throws JsonProcessingException, StockQuoteServiceException {
     // TODO Auto-generated method stub
     if (from.compareTo(to) >= 0) { 
-      throw new RuntimeException(); 
+      throw new RuntimeException("Failed to get data from service provider"); 
     }    
     String response = restTemplate.getForObject(buildUri(symbol, from, to), 
         String.class);

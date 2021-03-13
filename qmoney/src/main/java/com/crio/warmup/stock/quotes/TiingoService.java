@@ -26,9 +26,9 @@ public class TiingoService implements StockQuotesService {
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException, StockQuoteServiceException {
-    //System.out.println("Calling");
+    
     if (from.compareTo(to) >= 0) { 
-      throw new RuntimeException();
+      throw new RuntimeException("Failed to get data from service provider");
     }
     String response = restTemplate.getForObject(buildUri(symbol, from, to), String.class);
     ObjectMapper om = new ObjectMapper();
