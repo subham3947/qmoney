@@ -83,12 +83,12 @@ public class PortfolioManagerImpl implements PortfolioManager {
   }
 
   public  AnnualizedReturn getReturn(PortfolioTrade portfolioTrade, LocalDate endDate) throws 
-    StockQuoteServiceException {
+      StockQuoteServiceException {
     String symbol = portfolioTrade.getSymbol();
     AnnualizedReturn annualizedReturn;
     LocalDate startDate = portfolioTrade.getPurchaseDate();
     try {
-      if(startDate.compareTo(endDate) >= 0) { 
+      if (startDate.compareTo(endDate) >= 0) { 
         throw new RuntimeException("Failed to get data from service provider");
       }
       List<Candle> candle = getStockQuote(symbol, startDate, endDate);

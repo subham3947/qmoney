@@ -27,18 +27,22 @@ public class TiingoService implements StockQuotesService {
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException, StockQuoteServiceException {
     
+    List<Candle> stocksCandles = new ArrayList<>();
     if (from.compareTo(to) >= 0) { 
       throw new RuntimeException("Failed to get data from service provider");
     }
-    String response = restTemplate.getForObject(buildUri(symbol, from, to), String.class);
-    ObjectMapper om = new ObjectMapper();
-    om.registerModule(new JavaTimeModule());
-    Candle[] result = om.readValue(response, TiingoCandle[].class);
-    if (result != null) {
-      return Arrays.asList(result);
-    } else {
-      return Arrays.asList(new TiingoCandle[0]);
+    try {
+      String response = restTemplate.getForObject(buildUri(symbol, from, to), String.class);
+      ObjectMapper om = new ObjectMapper();
+      om.registerModule(new JavaTimeModule());
+      TiingoCandle[] result = om.readValue(response, TiingoCandle[].class);
+      stocksCandles = Arrays.asList(result);
+      
+    } catch (NullPointerException e) {
+      throw new StockQuoteServiceException("Error occured from Tiingo endpoint",e.getCause());
     }
+    return stocksCandles;
+    
   }
 
   protected static String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {

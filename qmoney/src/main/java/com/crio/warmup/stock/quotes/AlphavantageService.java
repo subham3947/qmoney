@@ -62,29 +62,33 @@ public class AlphavantageService implements StockQuotesService {
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) 
       throws JsonProcessingException, StockQuoteServiceException {
     // TODO Auto-generated method stub
-    if (from.compareTo(to) >= 0) { 
-      throw new RuntimeException("Failed to get data from service provider"); 
-    }    
-    String response = restTemplate.getForObject(buildUri(symbol, from, to), 
-        String.class);
-    ObjectMapper om = new ObjectMapper();
-    om.registerModule(new JavaTimeModule());
-    Map<LocalDate, AlphavantageCandle> jsonResponse = om.readValue(response, 
-        AlphavantageDailyResponse.class).getCandles();
-    if (jsonResponse == null) {
-      throw new StockQuoteServiceException("Response is null.");
-    }
-    LocalDate start = from; 
     List<Candle> stockList = new ArrayList<>();
-    while (start.isBefore(to.plusDays(1))) {
-      AlphavantageCandle candle = jsonResponse.get(start);
-      if (candle != null) {
-        candle.setDate(start);
-        stockList.add(candle);
+    try {
+
+      String response = restTemplate.getForObject(buildUri(symbol, from, to), 
+          String.class);
+      ObjectMapper om = new ObjectMapper();
+      om.registerModule(new JavaTimeModule());
+      Map<LocalDate, AlphavantageCandle> jsonResponse = om.readValue(response, 
+          AlphavantageDailyResponse.class).getCandles();
+      if (jsonResponse == null) {
+        throw new StockQuoteServiceException("Response is null.");
       }
-      start = start.plusDays(1);
+      LocalDate start = from; 
+      while (start.isBefore(to.plusDays(1))) {
+        AlphavantageCandle candle = jsonResponse.get(start);
+        if (candle != null) {
+          candle.setDate(start);
+          stockList.add(candle);
+        }
+        start = start.plusDays(1);
+      
+      }
+      
+    } catch (NullPointerException e) {
+      throw new StockQuoteServiceException("Error occured from Tiingo endpoint",e.getCause());
+    }   
     
-    }
     return stockList;
   }
 
