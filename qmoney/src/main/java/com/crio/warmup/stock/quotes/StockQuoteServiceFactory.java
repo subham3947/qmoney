@@ -29,7 +29,6 @@ public enum StockQuoteServiceFactory {
         return new TiingoService(restTemplate);
         
       } else {
-        System.out.println("Sending Alpha");
         return new AlphavantageService(restTemplate);
         
       }

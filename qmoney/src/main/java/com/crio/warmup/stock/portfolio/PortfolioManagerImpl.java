@@ -1,20 +1,25 @@
-
 package com.crio.warmup.stock.portfolio;
+
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.PortfolioTrade;
+import com.crio.warmup.stock.dto.TiingoCandle;
 import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.crio.warmup.stock.quotes.StockQuotesService;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,7 +33,8 @@ import org.springframework.web.client.RestTemplate;
 public class PortfolioManagerImpl implements PortfolioManager {
 
   RestTemplate restTemplate;
-  StockQuotesService stockQuotesService;
+  static StockQuotesService stockQuotesService;
+
 
 
   // Caution: Do not delete or modify the constructor, or else your build will break!
@@ -76,7 +82,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   }
 
-  public AnnualizedReturn getReturn(PortfolioTrade portfolioTrade, LocalDate endDate) {
+  public  AnnualizedReturn getReturn(PortfolioTrade portfolioTrade, LocalDate endDate) {
     String symbol = portfolioTrade.getSymbol();
     AnnualizedReturn annualizedReturn;
     LocalDate startDate = portfolioTrade.getPurchaseDate();
@@ -127,24 +133,61 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   }
 
-  
-  
-
-
-  
-  
-
-
-
-
-
-
 
   private Comparator<AnnualizedReturn> getComparator() {
     return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
   }
 
+  @Override
+  public List<AnnualizedReturn> calculateAnnualizedReturnParallel(List<PortfolioTrade> 
+      portfolioTrades, LocalDate endDate, int numThreads) throws 
+        InterruptedException, StockQuoteServiceException {
+    // TODO Auto-generated method stub
+    List<AnnualizedReturn> result = new ArrayList<AnnualizedReturn>();
+    ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+    List<CallAnnualized> taskList = new ArrayList<CallAnnualized>();
+    for (PortfolioTrade pt : portfolioTrades) {
+      taskList.add(new CallAnnualized(pt, endDate));
+    }
+    List<Future<AnnualizedReturn>> resultList = null;
+    resultList = executor.invokeAll(taskList);
+    executor.shutdown();
+    for (Future<AnnualizedReturn> ar : resultList) {
+      try {
+        result.add(ar.get());
+      } catch (ExecutionException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
 
+    }
+    result.sort(Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed());
+    return result;
+  }
 
+  class CallAnnualized implements Callable<AnnualizedReturn> {
+    //PortfolioManagerImpl portfolioManagerImpl;
+    PortfolioTrade portfolioTrade;
+    LocalDate endDate;
+
+    public CallAnnualized(PortfolioTrade portfolioTrade,LocalDate endDate) {
+      this.portfolioTrade = portfolioTrade;
+      this.endDate = endDate;
+    }
+    
+    public AnnualizedReturn call() throws Exception {
+      // TODO Auto-generated method stub
+      return  PortfolioManagerImpl.this.getReturn(portfolioTrade, endDate);
+      
+  
+    }
+
+   
+    
+      
+  }
+  
 
 }
+
+

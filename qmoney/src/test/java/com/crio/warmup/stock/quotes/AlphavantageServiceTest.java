@@ -1,4 +1,3 @@
-
 package com.crio.warmup.stock.quotes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

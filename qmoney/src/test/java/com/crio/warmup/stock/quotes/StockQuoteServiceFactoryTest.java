@@ -30,6 +30,5 @@ class StockQuoteServiceFactoryTest {
   void getServiceDefault() {
     assertTrue(StockQuoteServiceFactory.INSTANCE.getService("", new RestTemplate())
         instanceof AlphavantageService);
-    //System.out.println("here");
   }
 }

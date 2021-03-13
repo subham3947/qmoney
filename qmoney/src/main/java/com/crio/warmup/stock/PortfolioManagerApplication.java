@@ -270,19 +270,6 @@ public class PortfolioManagerApplication {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   public static void main(String[] args) throws Exception {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
     ThreadContext.put("runId", UUID.randomUUID().toString());
