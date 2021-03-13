@@ -68,7 +68,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
   // CHECKSTYLE:OFF
   @Override
   public List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> 
-      portfolioTrades, LocalDate endDate) {
+      portfolioTrades, LocalDate endDate) throws StockQuoteServiceException {
     if (endDate == null) {
       Collections.emptyList();
     }
@@ -82,7 +82,8 @@ public class PortfolioManagerImpl implements PortfolioManager {
 
   }
 
-  public  AnnualizedReturn getReturn(PortfolioTrade portfolioTrade, LocalDate endDate) {
+  public  AnnualizedReturn getReturn(PortfolioTrade portfolioTrade, LocalDate endDate) throws 
+    StockQuoteServiceException {
     String symbol = portfolioTrade.getSymbol();
     AnnualizedReturn annualizedReturn;
     LocalDate startDate = portfolioTrade.getPurchaseDate();
@@ -158,7 +159,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
       } catch (ExecutionException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
-      }
+      } 
 
     }
     result.sort(Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed());
