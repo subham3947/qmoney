@@ -72,13 +72,21 @@ public class PortfolioManagerImpl implements PortfolioManager {
     if (endDate == null) {
       Collections.emptyList();
     }
-    List<AnnualizedReturn> result = new ArrayList<AnnualizedReturn>();
-    for (PortfolioTrade pt : portfolioTrades) {
-      AnnualizedReturn annualReturn = getReturn(pt, endDate);
-      result.add(annualReturn);
+    try {
+      List<AnnualizedReturn> result = new ArrayList<AnnualizedReturn>();
+      for (PortfolioTrade pt : portfolioTrades) {
+        AnnualizedReturn annualReturn = getReturn(pt, endDate);
+        result.add(annualReturn);
+      }
+      result.sort(Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed());
+      return result;
+      
+    } catch (Exception e) {
+      //TODO: handle exception
+      throw new StockQuoteServiceException("Error occured from API endpoint",e.getCause());
+
     }
-    result.sort(Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed());
-    return result;
+    
 
   }
 
@@ -103,7 +111,8 @@ public class PortfolioManagerImpl implements PortfolioManager {
       annualizedReturn = new AnnualizedReturn(symbol, annualizedReturns, totalReturn); 
     } catch (Exception e) {
       //TODO: handle exception
-      annualizedReturn = new AnnualizedReturn(symbol, 0.0, 0.0);
+      throw new StockQuoteServiceException("Error occured from API endpoint",e.getCause());
+      //annualizedReturn = new AnnualizedReturn(symbol, 0.0, 0.0);
     }
      
     return annualizedReturn;
@@ -160,8 +169,8 @@ public class PortfolioManagerImpl implements PortfolioManager {
       try {
         result.add(ar.get());
       } catch (ExecutionException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        throw new StockQuoteServiceException("Error occured from API endpoint",e.getCause());
+
       } 
 
     }
@@ -181,7 +190,13 @@ public class PortfolioManagerImpl implements PortfolioManager {
     
     public AnnualizedReturn call() throws Exception {
       // TODO Auto-generated method stub
-      return  PortfolioManagerImpl.this.getReturn(portfolioTrade, endDate);
+      try {
+        return  PortfolioManagerImpl.this.getReturn(portfolioTrade, endDate);
+      } catch (Exception e) {
+        throw new StockQuoteServiceException("Error occured from API endpoint",e.getCause());
+
+      }
+      
       
   
     }
